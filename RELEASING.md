@@ -19,10 +19,11 @@ the first publish cannot be performed by the OIDC workflow. One-time bootstrap:
    for Trusted Publishing.
 4. **Do NOT create a normal GitHub Release for this first tag.** The workflow fires on
    every non-prerelease Release `published` event and rejects already-published
-   versions — a regular Release for the manually published `v0.1.0` would fail the run
-   (AIE-RELEASE-009). If a release page is wanted for v0.1.0, create it marked as
-   **pre-release** (the workflow skips prereleases). From `v0.1.1` on, regular
-   releases go through sections 1–3 and the workflow publishes automatically.
+   versions — a regular Release for whichever tag was actually published manually
+   would fail the run (AIE-RELEASE-009). If a release page is wanted for that bootstrap
+   tag, create it marked as **pre-release** (the workflow skips prereleases). Later,
+   higher-version releases go through sections 1–3 and the workflow publishes
+   automatically after Trusted Publishing is connected.
 
 ## 1. Pre-release checks
 
@@ -41,12 +42,12 @@ pnpm run check:pack
 - Create an **annotated** tag whose name is exactly `v${version}`:
 
   ```sh
-  git tag -a v0.1.0 -m "v0.1.0"
+  git tag -a v0.1.1 -m "v0.1.1"
   git push origin main
-  git push origin v0.1.0
+  git push origin v0.1.1
   ```
 
-- Do **not** use a lightweight tag (`git tag v0.1.0`) — the workflow rejects it.
+- Do **not** use a lightweight tag (`git tag v0.1.1`) — the workflow rejects it.
 - The tag must point at the commit the release is built from, and the tag name must
   equal `v${package.json version}`; the workflow verifies both.
 

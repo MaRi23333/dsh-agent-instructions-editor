@@ -1,0 +1,2 @@
+# Keep source text and embedded sourcemap sources identical across platforms.
+* text=auto eol=lf

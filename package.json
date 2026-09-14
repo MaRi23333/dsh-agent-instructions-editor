@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-instructions-editor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Settings-page editor for DeepSeek Harness workspace instruction files: the user-global ~/.dsh/AGENTS.md, project-chain AGENTS.md/CLAUDE.md files, and AGENTS.local.md/CLAUDE.local.md overlays, with byte-budget display and new-session hints.",
   "keywords": [
     "deepseek-harness",
