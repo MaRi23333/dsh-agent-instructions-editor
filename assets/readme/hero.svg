@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8faff"/>
+      <stop offset="1" stop-color="#eef2fe"/>
+    </linearGradient>
+  </defs>
+
+  <!-- canvas -->
+  <rect x="0.5" y="0.5" width="1199" height="319" rx="18" fill="url(#bg)" stroke="#dfe6fb"/>
+
+  <!-- brand badge: document + pen glyph (the plugin's settings-nav icon) -->
+  <g transform="translate(100,124) scale(4.5)">
+    <rect x="-2.2" y="-2.2" width="20.4" height="20.4" rx="4.6" fill="#4d6bfe"/>
+    <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3.5 2h5.4l3.6 3.6v7.9a1 1 0 0 1-1 1H4.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke-width="1.05"/>
+      <path d="M8.9 2v3.6h3.6" stroke-width="1"/>
+      <path d="M5.4 8.2h5.2M5.4 10.8h3.4" stroke-width="0.95"/>
+      <path d="M10.6 13.4l3.6-3.6 1.3 1.3-3.6 3.6-1.7 .4z" stroke-width="0.95"/>
+    </g>
+  </g>
+
+  <!-- title / tagline -->
+  <text x="248" y="140" font-family="ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace"
+        font-size="40" font-weight="700" fill="#16204a" letter-spacing="-0.5">dsh-agent-instructions-editor</text>
+  <text x="248" y="184" font-family="'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif"
+        font-size="23" fill="#3d4468">DeepSeek Harness 个性化指令编辑器 · 设置页直编 AGENTS.md 体系</text>
+  <text x="248" y="220" font-family="'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif"
+        font-size="16" fill="#7c84a8">全局 ~/.dsh/AGENTS.md · 项目链 AGENTS.md / CLAUDE.md · .local.md 覆盖层</text>
+  <text x="248" y="246" font-family="'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif"
+        font-size="16" fill="#7c84a8">loader-exact chain discovery · byte budget · conflict-safe atomic writes</text>
+
+  <!-- directory chain with per-dir doc slots, right side -->
+  <g stroke="#4d6bfe" fill="none" stroke-linecap="round">
+    <path d="M985 108v22M985 172v22M985 236v22" stroke-width="3" opacity="0.4"/>
+    <circle cx="985" cy="100" r="4" fill="#4d6bfe" stroke="none" opacity="0.55"/>
+  </g>
+  <g stroke="#4d6bfe" fill="#ffffff">
+    <!-- chain node 1: project root -->
+    <rect x="948" y="130" width="74" height="42" rx="8" stroke-width="3"/>
+    <path d="M960 144h12l4 4h20" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+    <path d="M960 158h34" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+    <!-- chain node 2: subdir -->
+    <rect x="948" y="194" width="74" height="42" rx="8" stroke-width="3" opacity="0.75"/>
+    <path d="M960 208h12l4 4h20" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+    <path d="M960 222h34" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+    <!-- chain node 3: workdir -->
+    <rect x="948" y="258" width="74" height="42" rx="8" stroke-width="3" opacity="0.5"/>
+    <path d="M960 272h12l4 4h20" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+    <path d="M960 286h34" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+  </g>
+
+  <!-- byte-budget bar, bottom right -->
+  <g>
+    <rect x="1048" y="188" width="104" height="10" rx="5" fill="#dfe6fb"/>
+    <rect x="1048" y="188" width="72" height="10" rx="5" fill="#4d6bfe" opacity="0.85"/>
+    <text x="1048" y="216" font-family="ui-monospace, Consolas, monospace" font-size="13"
+          fill="#7c84a8">45,082 / 65,536 B</text>
+  </g>
+</svg>

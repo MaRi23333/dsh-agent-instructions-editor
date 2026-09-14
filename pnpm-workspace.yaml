@@ -1,0 +1,47 @@
+allowBuilds:
+  esbuild: true
+# 版本策略：devDeps 对齐本机运行主机 dsh 0.1.2-rc.1。
+# pnpm 11.21.0 会把 `^0.1.2-rc.1` 这类带预发布下界的 caret 范围错误展开为
+# `>=0.1.2 <0.2.0-0`（反而排除了 0.1.2-rc.1 自身），导致 NO_MATCHING_VERSION；
+# 因此下方全部用精确版本 override，绕开范围解析（生成：scripts/gen-overrides.mjs）。
+# 例外：dsh-client-runtime / dsh-host-apiproxy 自 0.1.2 起被内联重构、
+# 停止单独发版，钉在最后发布版 0.1.1-rc.2。
+overrides:
+  '@deepseek-ai/dsh-agent-default-model': 0.1.2-rc.1
+  '@deepseek-ai/dsh-agent-presets': 0.1.2-rc.1
+  '@deepseek-ai/dsh-attachment': 0.1.2-rc.1
+  '@deepseek-ai/dsh-brand': 0.1.2-rc.1
+  '@deepseek-ai/dsh-client-runtime': 0.1.1-rc.2
+  '@deepseek-ai/dsh-code-runtime': 0.1.2-rc.1
+  '@deepseek-ai/dsh-cordis-host-runner': 0.1.2-rc.1
+  '@deepseek-ai/dsh-credentials': 0.1.2-rc.1
+  '@deepseek-ai/dsh-deque': 0.1.2-rc.1
+  '@deepseek-ai/dsh-file-reference': 0.1.2-rc.1
+  '@deepseek-ai/dsh-goal': 0.1.2-rc.1
+  '@deepseek-ai/dsh-host-apiproxy': 0.1.1-rc.2
+  '@deepseek-ai/dsh-host-directory-picker': 0.1.2-rc.1
+  '@deepseek-ai/dsh-host-plugin-inventory': 0.1.2-rc.1
+  '@deepseek-ai/dsh-invariants': 0.1.2-rc.1
+  '@deepseek-ai/dsh-llm-retry': 0.1.2-rc.1
+  '@deepseek-ai/dsh-message-feedback': 0.1.2-rc.1
+  '@deepseek-ai/dsh-native-command': 0.1.2-rc.1
+  '@deepseek-ai/dsh-sandbox': 0.1.2-rc.1
+  '@deepseek-ai/dsh-sandbox-policy': 0.1.2-rc.1
+  '@deepseek-ai/dsh-scope': 0.1.2-rc.1
+  '@deepseek-ai/dsh-session-persistence': 0.1.2-rc.1
+  '@deepseek-ai/dsh-session-projection': 0.1.2-rc.1
+  '@deepseek-ai/dsh-session-projection-cache': 0.1.2-rc.1
+  '@deepseek-ai/dsh-session-title': 0.1.2-rc.1
+  '@deepseek-ai/dsh-skill': 0.1.2-rc.1
+  '@deepseek-ai/dsh-storage': 0.1.2-rc.1
+  '@deepseek-ai/dsh-storage-domain': 0.1.2-rc.1
+  '@deepseek-ai/dsh-system-prompt': 0.1.2-rc.1
+  '@deepseek-ai/dsh-timeout': 0.1.2-rc.1
+  '@deepseek-ai/dsh-tool-todo': 0.1.2-rc.1
+  '@deepseek-ai/dsh-typert-protocol': 0.1.2-rc.1
+  '@deepseek-ai/dsh-typert-registry': 0.1.2-rc.1
+  '@deepseek-ai/dsh-user-approval': 0.1.2-rc.1
+  '@deepseek-ai/dsh-user-questions': 0.1.2-rc.1
+  '@deepseek-ai/dsh-util-crypto': 0.1.2-rc.1
+  '@deepseek-ai/dsh-util-time': 0.1.2-rc.1
+  '@deepseek-ai/dsh-util-values': 0.1.2-rc.1

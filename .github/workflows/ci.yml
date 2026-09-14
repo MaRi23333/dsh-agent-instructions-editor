@@ -1,0 +1,79 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      # AIE-CI-007: the path-handling suite must run under both path
+      # semantics (POSIX resolution on Linux, Win32 on Windows).
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: ['22', '24']
+    runs-on: ${{ matrix.os }}
+    # AIE-CI-007 r2: the committed-lib comparison step uses Bash syntax
+    # (`for …; do`); without an explicit shell, windows-latest would run it
+    # under PowerShell and fail to parse. Declare Bash once for every step.
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: 11.21.0
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Unit tests
+        run: pnpm run test
+
+      - name: Build
+        run: pnpm run build
+
+      # The bundle embeds pnpm virtual-store paths in `//#region` comments and
+      # source-map sources. Those paths are truncated-with-hash on Windows but
+      # full-length on Linux, so a byte-exact diff can never pass cross-OS.
+      # Mask the machine-specific path segment and compare everything else.
+      - name: lib/ must match committed artifacts
+        run: |
+          set -e
+          for f in lib/index.js lib/index.js.map lib/client.js lib/client.js.map; do
+            git show "HEAD:$f" | sed -E 's#node_modules/\.pnpm/[^/\\"]+#node_modules/.pnpm/<pkg>#g' > /tmp/committed
+            sed -E 's#node_modules/\.pnpm/[^/\\"]+#node_modules/.pnpm/<pkg>#g' "$f" > /tmp/built
+            if ! diff -q /tmp/committed /tmp/built > /dev/null; then
+              echo "stale or divergent build: $f"
+              diff -u /tmp/committed /tmp/built | head -40
+              exit 1
+            fi
+          done
+          echo "lib/ matches committed artifacts (virtual-store paths normalized)"
+
+      - name: Host + client smoke
+        run: pnpm run smoke
+
+      - name: Package whitelist
+        run: pnpm run check:pack

@@ -1,0 +1,6 @@
+# Composition patch: insert this plugin's row into the host bundle.
+# The row lives on the HOST plane: its HTTP routes are served for every
+# browser client regardless of agent preset.
+- insert:
+    - id: agent-instructions-editor   # unique row id
+      name: dsh-agent-instructions-editor   # MUST equal the package name
