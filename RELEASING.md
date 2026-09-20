@@ -14,9 +14,18 @@ the first publish cannot be performed by the OIDC workflow. One-time bootstrap:
 2. From that commit's working tree, run `npm publish --ignore-scripts --access public`
    **manually** (authorized maintainer only). Run `pnpm run check:pack` first — the
    published content must match the whitelist.
-3. On npmjs.com, open the new package → Publishing settings → connect the GitHub
-   workflow (`MaRi23333/dsh-agent-instructions-editor` / `.github/workflows/publish.yml`)
-   for Trusted Publishing.
+3. After the package exists and the repository is public, configure Trusted Publishing
+   from an authorized maintainer's interactive terminal (npm 11.15.0 or newer).
+   Preview the exact binding, then complete npm's browser 2FA for the actual command:
+
+   ```sh
+   npm trust github dsh-agent-instructions-editor --repo MaRi23333/dsh-agent-instructions-editor --file publish.yml --allow-publish --dry-run --json --registry=https://registry.npmjs.org/
+   npm trust github dsh-agent-instructions-editor --repo MaRi23333/dsh-agent-instructions-editor --file publish.yml --allow-publish --registry=https://registry.npmjs.org/
+   ```
+
+   No GitHub Actions environment is used. The workflow file is `publish.yml`, not
+   its full repository path. Use npm's website Publishing settings as a fallback
+   if the CLI binding is unavailable. Never store tokens or 2FA codes in this repository.
 4. **Do NOT create a normal GitHub Release for this first tag.** The workflow fires on
    every non-prerelease Release `published` event and rejects already-published
    versions — a regular Release for whichever tag was actually published manually
@@ -24,6 +33,12 @@ the first publish cannot be performed by the OIDC workflow. One-time bootstrap:
    tag, create it marked as **pre-release** (the workflow skips prereleases). Later,
    higher-version releases go through sections 1–3 and the workflow publishes
    automatically after Trusted Publishing is connected.
+
+The existing `v0.1.0` and `v0.1.1` tags are private-test history and must never get
+normal GitHub Releases. Before any regular release, confirm its version is newer
+than npm's current `latest`. The workflow rejects duplicate versions but does not
+prevent publishing an older, previously unpublished version and moving `latest`
+backwards.
 
 ## 1. Pre-release checks
 
@@ -42,12 +57,14 @@ pnpm run check:pack
 - Create an **annotated** tag whose name is exactly `v${version}`:
 
   ```sh
-  git tag -a v0.1.1 -m "v0.1.1"
+  version=$(node -p "require('./package.json').version")
+  git tag -a "v$version" -m "v$version"
   git push origin main
-  git push origin v0.1.1
+  git push origin "v$version"
   ```
 
-- Do **not** use a lightweight tag (`git tag v0.1.1`) — the workflow rejects it.
+- The commands above use a POSIX shell. Do **not** use a lightweight tag — the
+  workflow rejects it. Never move an existing pushed tag; use a new patch version.
 - The tag must point at the commit the release is built from, and the tag name must
   equal `v${package.json version}`; the workflow verifies both.
 

@@ -28,7 +28,7 @@
   <text x="248" y="220" font-family="'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif"
         font-size="16" fill="#7c84a8">全局 ~/.dsh/AGENTS.md · 项目链 AGENTS.md / CLAUDE.md · .local.md 覆盖层</text>
   <text x="248" y="246" font-family="'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif"
-        font-size="16" fill="#7c84a8">loader-exact chain discovery · byte budget · conflict-safe atomic writes</text>
+        font-size="16" fill="#7c84a8">instruction chain · byte budget · conflict checks · atomic writes</text>
 
   <!-- directory chain with per-dir doc slots, right side -->
   <g stroke="#4d6bfe" fill="none" stroke-linecap="round">

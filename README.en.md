@@ -17,8 +17,8 @@ Personalization settings page (个性化指令) to the Web GUI for editing the h
 instruction files, in the spirit of Codex's personalization settings:
 
 - the user-global `~/.dsh/AGENTS.md`,
-- project-chain `AGENTS.md` / `CLAUDE.md` files discovered the same way the harness
-  instruction loader discovers them, and
+- project-chain `AGENTS.md` / `CLAUDE.md` files discovered with the same rules the
+  harness instruction loader applies, and
 - `AGENTS.local.md` / `CLAUDE.local.md` overlays.
 
 ## Features
@@ -30,33 +30,40 @@ instruction files, in the spirit of Codex's personalization settings:
   renders each level of the "project root → working directory" chain with its 4 candidate
   slots (AGENTS.md / CLAUDE.md / AGENTS.local.md / CLAUDE.local.md) — click to edit an
   existing file or create a missing one.
-- **Loader-exact behavior display**: chain discovery, per-directory content dedup
-  (⧉ badge), byte totals and budget bar all mirror the real rules of
+- **Same discovery rules as the instruction loader**: chain discovery, per-directory
+  content dedup (⧉ badge), byte totals and the budget bar follow the same rules as
   `@deepseek-ai/dsh-agent-instructions`.
-- **Safe writes**: filename whitelist + realpath project-root containment + mtime
-  conflict detection (409 → reload or force-overwrite) + temp-file atomic rename.
-- **Honest hints**: the instruction loader has no file watcher — saved content is
-  guaranteed for new sessions; already-open sessions sync after their next successful
-  file operation.
+- **Guarded writes**: filename whitelist + realpath project-root containment + mtime
+  conflict detection (409 → reload or force-overwrite) + temp-file atomic rename; writes
+  to the same file within one dsh web process are serialized through a queue; a normal
+  save using an outdated modification time receives a 409 conflict response.
+- **When changes apply**: start a new session after saving. The editor does not directly
+  replace instructions in an existing session; reloading is controlled by the host loader.
 
 ## Install
 
-The plugin is currently in private testing and has not been published to npm. Download it with a GitHub account that has access to the repository:
-
-1. Sign in to GitHub, open [MaRi23333/dsh-agent-instructions-editor](https://github.com/MaRi23333/dsh-agent-instructions-editor), select **Code → Download ZIP**, and extract it locally. Alternatively, sign in to GitHub CLI with an authorized account and run `gh repo clone MaRi23333/dsh-agent-instructions-editor`.
-2. Replace the path below with the absolute path to the extracted or cloned plugin directory (containing `package.json` and `lib/`), keep the quotes, and run:
+Install from npm with the DSH CLI that matches your installed host (recommended):
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add "file:/absolute/path/to/dsh-agent-instructions-editor" --ignore-scripts
+dsh plugin --profile web add dsh-agent-instructions-editor@latest
 ```
 
-3. **Restart dsh web** (stop the current process, then run `dsh web`) and refresh the page.
+Then **restart dsh web** (stop the current process, then run `dsh web`) and refresh the
+page. If installing from npm is not an option, install from a fixed GitHub tag instead:
 
-On Windows, an example path is `"file:C:/Plugins/dsh-agent-instructions-editor-main"`. Keep the `file:` prefix so the installer also installs runtime dependencies; a plain directory path is treated as a local development link. Node.js 22+, pnpm, and a DSH CLI matching the installed host are required.
+```sh
+dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.1.2
+```
 
-The repository includes the `lib/` build artifacts; no development dependency installation or build is needed. `--ignore-scripts` uses those existing artifacts.
+Both methods take effect after restarting dsh web.
 
-Package-name installation instructions will be provided after publication to npm.
+**Switching from a local directory or GitHub install to npm**: use the command above
+with `@latest` to explicitly request the npm version. Keep that suffix so an existing
+installation is not mistaken for an already-satisfied request. Restart dsh web afterwards.
+
+Requirements: Node.js 22+, pnpm, and a DSH CLI matching the installed host. No local
+build is needed — the npm package and the GitHub repository both ship the `lib/` build
+artifacts.
 
 ## Security model and known limitations
 
@@ -66,13 +73,16 @@ Package-name installation instructions will be provided after publication to npm
   without an Origin header are unaffected).
 - Write path: filename whitelist (4 candidates) + directory realpath must fall inside a
   registered project's "project root → working directory" ancestor chain + mtime
-  conflict fence (409) + atomic temp-file rename. A malicious local process runs at the
-  same trust level as this user (it could edit the files directly) and is not within the
-  threat model.
+  conflict fence (409) + atomic temp-file rename. Writes to the same target within one
+  process are serialized through an in-memory queue and the mtime fence is re-checked
+  inside it; there is no cross-process file lock — when an external editor or another
+  process saves the same file concurrently, a tiny race window remains between the
+  fence re-check and the rename, where an external update could in theory be silently
+  lost (same as ordinary editors). A malicious local process runs at the same trust
+  level as this user (it could edit the files directly) and is not within the threat
+  model.
 - Reads follow symlinks (same exposure as the official loader); writes replace the
   symlink itself via rename and never write through to the target.
-- Under extreme concurrency there is a microsecond stat→rename window where an update
-  could in theory be silently lost (no file lock — same as ordinary editors).
 - The editor works with the loader defaults preset by the deployment (markers=`[.git]`,
   4 candidates, 65,536-byte budget); if you change dsh-base's agent-instructions
   configuration, the editor's display drifts accordingly.
@@ -87,23 +97,23 @@ Package-name installation instructions will be provided after publication to npm
   settings namespace.
 - **Client half** (`src/client/`): contributes the settings page via the
   `settings.section` slot; plain textarea editor (zero extra dependencies).
-- **Discovery** (`src/chain.ts`): mirrors the instruction loader rule by rule (marker
-  walk-up, ancestor chain, candidate probing, per-directory sha1(trim) dedup) — pure
-  Node, unit-testable.
+- **Discovery** (`src/chain.ts`): reimplements the instruction loader's rules one by one
+  (marker walk-up, ancestor chain, candidate probing, per-directory sha1(trim) dedup) —
+  pure Node, unit-testable.
 
 ## Development
 
 ```sh
 pnpm install
 pnpm run typecheck
-pnpm run test      # tsx --test tests/chain.test.ts (discovery logic)
+pnpm run test      # discovery, write-path and edit-state unit tests
 pnpm run build     # tsdown: lib/index.js (host) + lib/client.js (browser)
 pnpm run smoke     # smoke-host.mjs + smoke-client.mjs
 pnpm run check:pack
 ```
 
-- Dev dependencies are pinned to DSH `0.1.2-rc.1` (matching the running host). The
-  exhaustive exact-version overrides in `pnpm-workspace.yaml` exist because:
+- Dev dependencies are pinned to DSH `0.1.2-rc.1`. The exhaustive exact-version overrides
+  in `pnpm-workspace.yaml` exist because:
   1. pnpm 11.21.0 mis-expands caret ranges with prerelease lower bounds
      (`^0.1.2-rc.1` → `>=0.1.2 <0.2.0-0`, which excludes 0.1.2-rc.1 itself), causing
      NO_MATCHING_VERSION; and
