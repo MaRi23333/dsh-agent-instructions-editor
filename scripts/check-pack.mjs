@@ -61,6 +61,7 @@ const expected = [
   'README.md',
   'THIRD_PARTY_NOTICES.md',
   'assets/readme/hero.svg',
+  'assets/readme/settings.png',
   'cordis.patch.yml',
   'lib/client.js',
   'lib/index.js',

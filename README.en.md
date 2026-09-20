@@ -40,6 +40,13 @@ instruction files, in the spirit of Codex's personalization settings:
 - **When changes apply**: start a new session after saving. The editor does not directly
   replace instructions in an existing session; reloading is controlled by the host loader.
 
+## Screenshot
+
+![Personalization settings: global instruction editor, byte budget and project instruction chain](./assets/readme/settings.png)
+
+View and edit global and project instructions on the same settings page. The current
+UI is in Chinese, as shown here.
+
 ## Install
 
 Install from npm with the DSH CLI that matches your installed host (recommended):
