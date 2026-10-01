@@ -37,7 +37,7 @@ DeepSeek Harness 的个性化指令编辑插件：在 Web 设置页里直接编�
 
 ## 宿主与桌面端兼容
 
-插件 **0.2.0 面向 DSH 0.2**，适配基线为 `0.2.0-rc.2`。本版修复旧插件在新宿主上报 `settings.register is not a function` 的问题，改用宿主的 profile 设置接口。桌面客户端沿用 Web 插件界面，无需另一份桌面专用包。
+插件 **0.2.1 面向 DSH 0.2**，适配基线为 `0.2.0-rc.2`。本版修复旧插件在新宿主上报 `settings.register is not a function` 的问题，改用宿主的 profile 设置接口。桌面客户端沿用 Web 插件界面，无需另一份桌面专用包。
 
 **仍使用 DSH 0.1 的用户请保留插件 0.1.2**（npm 安装指定 `dsh-agent-instructions-editor@0.1.2`），不要直接升级到本版。开发依赖与 CI 基线已更新到 DSH `0.2.0-rc.2`；指令文件的发现规则、保存安全边界和「新会话生效」语义保持不变。
 
@@ -52,7 +52,7 @@ dsh plugin --profile web add dsh-agent-instructions-editor@latest
 然后**重启 dsh web**（停止当前进程，再运行 `dsh web`）并刷新页面。npm 安装不可用时，可改为从 GitHub 固定 tag 安装：
 
 ```sh
-dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.0
+dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.1
 ```
 
 两种方式都在重启 dsh web 后生效。
