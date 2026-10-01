@@ -9,7 +9,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { Readable } from 'node:stream'
-import { mkdtemp, mkdir, rm } from 'node:fs/promises'
+import { mkdtemp, mkdir, realpath, rm } from 'node:fs/promises'
 import * as os from 'node:os'
 import * as path from 'node:path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
@@ -209,10 +209,20 @@ test('apply projects route round-trips manual entries and preserves CAS/security
     assert.equal(typeof initial.body.revision, 'number')
     const initialRevision = initial.body.revision as number
 
-    const added = await invoke(harness, 'POST', { op: 'add', dir: dirs.added, expectedRevision: initialRevision }, { 'content-type': 'application/json' })
+    // Windows accepts case-variant paths, while fs.realpath() returns the
+    // filesystem's canonical spelling. Exercise that boundary explicitly and
+    // compare the route result with the same canonical value it stores.
+    const addedInput = process.platform === 'win32'
+      ? path.join(path.dirname(dirs.added), path.basename(dirs.added).toUpperCase())
+      : dirs.added
+    const canonicalAdded = await realpath(addedInput)
+    if (process.platform === 'win32') assert.notEqual(addedInput, canonicalAdded)
+
+    const added = await invoke(harness, 'POST', { op: 'add', dir: addedInput, expectedRevision: initialRevision }, { 'content-type': 'application/json' })
     assert.equal(added.status, 200, JSON.stringify(added.body))
-    const addedEntry = projectEntries(added.body).find((entry) => entry.dir === dirs.added)
+    const addedEntry = projectEntries(added.body).find((entry) => entry.dir === canonicalAdded)
     assert.ok(addedEntry)
+    assert.equal(addedEntry.dir, canonicalAdded)
     const addedId = String(addedEntry.id).replace(/^manual:/, '')
     assert.ok(manualEntry(added.body, 'existing'))
     assert.ok(manualEntry(added.body, 'other'))
@@ -237,7 +247,7 @@ test('apply projects route round-trips manual entries and preserves CAS/security
     assert.ok(manualEntry(afterRemoveRead.body, 'existing'))
     assert.ok(manualEntry(afterRemoveRead.body, 'other'))
 
-    const stale = await invoke(harness, 'POST', { op: 'add', dir: dirs.added, expectedRevision: initialRevision }, { 'content-type': 'application/json' })
+    const stale = await invoke(harness, 'POST', { op: 'add', dir: addedInput, expectedRevision: initialRevision }, { 'content-type': 'application/json' })
     assert.equal(stale.status, 409)
     assert.equal(stale.body.error, 'conflict')
 
