@@ -9,7 +9,7 @@
 <p align="center">
   <img src="https://img.shields.io/github/actions/workflow/status/MaRi23333/dsh-agent-instructions-editor/ci.yml?style=flat-square&label=CI" alt="CI" />
   <img src="https://img.shields.io/github/license/MaRi23333/dsh-agent-instructions-editor?style=flat-square" alt="License: MIT" />
-  <img src="https://img.shields.io/badge/DeepSeek%20Harness-0.1.2--rc.1-4d6bfe?style=flat-square" alt="DeepSeek Harness 0.1.2-rc.1" />
+  <img src="https://img.shields.io/badge/DeepSeek%20Harness-0.2.0--rc.2-4d6bfe?style=flat-square" alt="DeepSeek Harness 0.2.0-rc.2" />
 </p>
 
 > **English:** dsh-agent-instructions-editor adds a 个性化指令 (Personalization)
@@ -34,6 +34,12 @@ DeepSeek Harness 的个性化指令编辑插件：在 Web 设置页里直接编�
 ![个性化指令设置页：全局指令编辑器、字节预算与项目指令链](./assets/readme/settings.png)
 
 全局指令和项目指令可在同一设置页查看与编辑。截图中的界面语言为中文。
+
+## 宿主与桌面端兼容
+
+开发侧于 2026-09-30 报告：`dsh-agent-instructions-editor 0.1.2` 在 DSH `0.2.0-rc.2` 与同版本桌面客户端中可用。桌面客户端沿用 Web 插件界面，无需另一份桌面专用包。
+
+该说明依据维护者使用反馈，不改变指令文件的发现规则、保存安全边界或「新会话生效」语义。开发依赖与 CI 夹具仍锁定 DSH `0.1.2-rc.1`；其他宿主版本和操作系统需单独验证。
 
 ## 安装
 

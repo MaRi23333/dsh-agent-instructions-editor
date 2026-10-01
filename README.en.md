@@ -9,7 +9,7 @@
 <p align="center">
   <img src="https://img.shields.io/github/actions/workflow/status/MaRi23333/dsh-agent-instructions-editor/ci.yml?style=flat-square&label=CI" alt="CI" />
   <img src="https://img.shields.io/github/license/MaRi23333/dsh-agent-instructions-editor?style=flat-square" alt="License: MIT" />
-  <img src="https://img.shields.io/badge/DeepSeek%20Harness-0.1.2--rc.1-4d6bfe?style=flat-square" alt="DeepSeek Harness 0.1.2-rc.1" />
+  <img src="https://img.shields.io/badge/DeepSeek%20Harness-0.2.0--rc.2-4d6bfe?style=flat-square" alt="DeepSeek Harness 0.2.0-rc.2" />
 </p>
 
 A [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) plugin that adds a
@@ -46,6 +46,12 @@ instruction files, in the spirit of Codex's personalization settings:
 
 View and edit global and project instructions on the same settings page. The current
 UI is in Chinese, as shown here.
+
+## Host and desktop compatibility
+
+On 2026-09-30, the development team reported that `dsh-agent-instructions-editor 0.1.2` works with DSH `0.2.0-rc.2` and the desktop client of the same version. The desktop client uses the Web plugin UI, so no separate desktop-specific package is needed.
+
+This statement reflects maintainer usage feedback and does not change instruction discovery, save security boundaries, or the "start a new session" semantics. Development dependencies and CI fixtures remain pinned to DSH `0.1.2-rc.1`; other host versions and operating systems require separate validation.
 
 ## Install
 
