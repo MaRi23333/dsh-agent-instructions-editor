@@ -37,9 +37,9 @@ DeepSeek Harness 的个性化指令编辑插件：在 Web 设置页里直接编�
 
 ## 宿主与桌面端兼容
 
-开发侧于 2026-09-30 报告：`dsh-agent-instructions-editor 0.1.2` 在 DSH `0.2.0-rc.2` 与同版本桌面客户端中可用。桌面客户端沿用 Web 插件界面，无需另一份桌面专用包。
+插件 **0.2.0 面向 DSH 0.2**，适配基线为 `0.2.0-rc.2`。本版修复旧插件在新宿主上报 `settings.register is not a function` 的问题，改用宿主的 profile 设置接口。桌面客户端沿用 Web 插件界面，无需另一份桌面专用包。
 
-该说明依据维护者使用反馈，不改变指令文件的发现规则、保存安全边界或「新会话生效」语义。开发依赖与 CI 夹具仍锁定 DSH `0.1.2-rc.1`；其他宿主版本和操作系统需单独验证。
+**仍使用 DSH 0.1 的用户请保留插件 0.1.2**（npm 安装指定 `dsh-agent-instructions-editor@0.1.2`），不要直接升级到本版。开发依赖与 CI 基线已更新到 DSH `0.2.0-rc.2`；指令文件的发现规则、保存安全边界和「新会话生效」语义保持不变。
 
 ## 安装
 
@@ -52,14 +52,14 @@ dsh plugin --profile web add dsh-agent-instructions-editor@latest
 然后**重启 dsh web**（停止当前进程，再运行 `dsh web`）并刷新页面。npm 安装不可用时，可改为从 GitHub 固定 tag 安装：
 
 ```sh
-dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.1.2
+dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.0
 ```
 
 两种方式都在重启 dsh web 后生效。
 
 **从本地目录或 GitHub 安装切换到 npm**：使用上面带 `@latest` 的命令，明确请求 npm 上的版本。不要省略 `@latest`，以免旧安装被判断为已存在而跳过更新。完成后重启 dsh web。
 
-环境要求：Node.js 22+、pnpm，以及与所装宿主匹配的 DSH CLI。无需本地构建：npm 包与 GitHub 仓库都附带 `lib/` 构建产物。
+环境要求：DSH 0.2（本版适配基线 `0.2.0-rc.2`）、Node.js 22+、pnpm，以及与所装宿主匹配的 DSH CLI。无需本地构建：npm 包与 GitHub 仓库都附带 `lib/` 构建产物。
 
 ## 安全模型与已知限制
 
@@ -71,14 +71,14 @@ dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.1
 
 ## 架构
 
-- **Host 半区**（`src/index.ts`）：自有 HTTP 路由 `/agent-instructions/api/{projects,chain,file}`（标准 `api.settings.*` wire 是白名单制，第三方命名空间不可用）；手动项目注册表存放在 `agent-instructions-editor` 设置命名空间。
+- **Host 半区**（`src/index.ts`）：自有 HTTP 路由 `/agent-instructions/api/{projects,chain,file}`；手动项目注册表存放在本插件的 profile 条目中，通过 DSH 0.2 的 `SettingsForms` 接口读写，保存携带 revision 冲突检测。
 - **Client 半区**（`src/client/`）：`settings.section` 槽位贡献设置页；纯 textarea 编辑器（零额外依赖）。
 - **发现逻辑**（`src/chain.ts`）：按指令加载器的规则逐条复刻（marker 上溯、祖先链、候选探测、目录内 sha1(trim) 去重），纯 Node 可单测。
 
 ## 开发
 
 ```sh
-pnpm install
+pnpm install --frozen-lockfile
 pnpm run typecheck
 pnpm run test      # 发现、写入与编辑状态单测
 pnpm run build     # tsdown：lib/index.js（host）+ lib/client.js（browser）
@@ -86,9 +86,9 @@ pnpm run smoke     # smoke-host.mjs + smoke-client.mjs
 pnpm run check:pack
 ```
 
-- 开发依赖锁定 DSH `0.1.2-rc.1`。`pnpm-workspace.yaml` 的 overrides 出于两个原因全量精确钉版：
-  1. pnpm 11.21.0 会把 `^0.1.2-rc.1` 这类带预发布下界的 caret 范围错误展开为 `>=0.1.2 <0.2.0-0`（排除了 0.1.2-rc.1 自身），导致 NO_MATCHING_VERSION；
-  2. `@deepseek-ai/dsh-client-runtime` / `@deepseek-ai/dsh-host-apiproxy` 自 0.1.2 起被内联重构、停止单独发版，钉在最后的 `0.1.1-rc.2`。
+- 开发依赖锁定 DSH `0.2.0-rc.2`。`pnpm-workspace.yaml` 的 overrides 出于两个原因全量精确钉版：
+  1. pnpm 11.21.0 会把 `^0.2.0-rc.2` 这类带预发布下界的 caret 范围错误展开为 `>=0.2.0 <0.3.0-0`（排除了 `0.2.0-rc.2` 自身），导致 NO_MATCHING_VERSION；
+  2. 已内联、停更的 `@deepseek-ai/dsh-client-runtime` / `@deepseek-ai/dsh-host-apiproxy` 保留 `0.1.1-rc.2`，`@deepseek-ai/dsh-agent-presets` / `@deepseek-ai/dsh-code-runtime` 保留 `0.1.5-rc.3`。
 - 这些依赖仅用于类型检查与测试，不进入发布产物（见 [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)）。
 
 ## License

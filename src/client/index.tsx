@@ -240,7 +240,9 @@ export function apply(ctx: ClientContext): void {
     }
   }
   ctx.effect(() => ctx.remote.$on('settings/document-updated', (ns: string) => {
-    if (ns === NS) refresh()
+    // 0.2: the payload is the profile entry id (not the plugin namespace) —
+    // match loosely; a spurious refresh is one cheap no-store GET.
+    if (typeof ns === 'string' && (ns === NS || ns.includes('agent-instructions-editor'))) refresh()
   }), 'agent-instructions-editor: settings invalidation')
 
   // Native directory chooser served by the host's directory-picker service.

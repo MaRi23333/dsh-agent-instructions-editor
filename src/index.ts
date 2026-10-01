@@ -27,7 +27,8 @@ import * as os from 'node:os'
 import * as path from 'node:path'
 import { randomBytes } from 'node:crypto'
 import z from '@deepseek-ai/schemastery'
-import type { SettingsProvider } from '@deepseek-ai/dsh-settings'
+import type { SettingsDescriptor, SettingsForms } from '@deepseek-ai/dsh-settings'
+import type { ConfigEditor } from '@deepseek-ai/dsh-config-editor'
 import type {} from '@deepseek-ai/dsh-host-webserver'
 import type {} from '@deepseek-ai/dsh-workspace'
 import type {} from '@deepseek-ai/dsh-session-query'
@@ -59,8 +60,12 @@ export interface Config {
   manualProjects?: Record<string, string>
 }
 
-export const Config: z<Config> = z.object({
-  manualProjects: z.dict(z.string()).default({}),
+// No `z<Config>` annotation: 0.2 schemastery's Dict output type (Volatile<…>)
+// is not assignable to Record<string, string>, and the loader consumes the
+// schema by reflection — the `Config` interface stays the contract for
+// apply()'s merged config.
+export const Config = z.object({
+  manualProjects: z.dict(z.string()).default({}).volatile(),
 })
 
 const NS = 'agent-instructions-editor'
@@ -202,24 +207,50 @@ function labelFor(dir: string): string {
 }
 
 export function apply(ctx: Context, config: Config): void {
-  let settingsService: SettingsProvider | undefined
+  let settingsService: SettingsForms | undefined
+  let configEditorService: ConfigEditor | undefined
   let settingsFailure: string | undefined
+  let entryId: string | undefined
 
-  // The manual registry lives in the settings document (hot reloaded, no
-  // restart), like dsh-subagent-library's roster. `installSettingsSection`
-  // is deliberately not used — in this harness build its registration is
-  // dropped for bundle-loaded plugins.
+  // 0.2.x: the settings service (SettingsForms) projects the plugin's
+  // exported Config schema per profile entry — there is no runtime
+  // `register` anymore. The manual-projects registry lives in our entry's
+  // config and is read/written through describe()/update(). (The loader also
+  // auto-migrates the removed 0.1 settings.yaml sections into the profile.)
   ctx.inject(['settings'], (sctx: Context) => {
     settingsService = sctx.settings
-    settingsFailure = undefined // the latch must reset when a restarted fiber registers successfully
-    try {
-      const scope = sctx.settings.register(NS, Config, { base: config })
-      sctx.effect(() => () => { /* nothing derived is memoized */ }, 'agent-instructions-editor: settings scope')
-      scope.watch(() => { /* every operation re-reads the descriptor */ })
-    } catch (error) {
-      settingsFailure = `agent-instructions-editor 设置段注册失败：${String(error)}`
-    }
+    settingsFailure = undefined
   })
+  ctx.inject(['configEditor'], (cctx: Context) => {
+    configEditorService = cctx.configEditor
+  })
+
+  /**
+   * Locate our own profile entry id. Lazy + cached: at apply time our fiber
+   * may not be settled yet, so the config editor may not list us yet; HTTP
+   * requests arrive after startup. Primary: fiber identity; fallback: entry
+   * ids derived from our plugin/package names.
+   */
+  const resolveEntryId = (): string | undefined => {
+    if (entryId !== undefined) return entryId
+    const editor = configEditorService
+    if (editor === undefined) return undefined
+    const candidates = editor.entries()
+    const own = candidates.find((entry) => entry.fiber === ctx.fiber)
+      ?? candidates.find((entry) => {
+        const id = entry.options.id
+        return typeof id === 'string' && (id === NS || id.includes(NS) || id.includes('dsh-agent-instructions-editor'))
+      })
+    if (own !== undefined) entryId = own.options.id
+    return entryId
+  }
+
+  const ownDescriptor = (): SettingsDescriptor | undefined => {
+    const svc = settingsService
+    const id = resolveEntryId()
+    if (svc === undefined || id === undefined) return undefined
+    return svc.describe().find((candidate) => candidate.ns === id)
+  }
 
   // Auto-discovered projects, best effort: the durable workspace registry
   // first, then the most recent distinct session cwds that the registry
@@ -269,11 +300,8 @@ export function apply(ctx: Context, config: Config): void {
   })
 
   const manualProjects = (): Record<string, string> => {
-    const svc = settingsService
-    if (svc === undefined) return {}
-    const descriptor = svc.describe().find((candidate) => candidate.ns === NS)
-    if (descriptor === undefined) return {}
-    const section = (descriptor.user ?? descriptor.value) as Record<string, unknown> | undefined
+    const descriptor = ownDescriptor()
+    const section = (descriptor?.user ?? descriptor?.value) as Record<string, unknown> | undefined
     const raw = section?.manualProjects
     if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return {}
     const out: Record<string, string> = {}
@@ -283,11 +311,7 @@ export function apply(ctx: Context, config: Config): void {
     return out
   }
 
-  const currentRevision = (): number | undefined => {
-    const svc = settingsService
-    if (svc === undefined) return undefined
-    return svc.describe().find((candidate) => candidate.ns === NS)?.revision
-  }
+  const currentRevision = (): number | undefined => ownDescriptor()?.revision
 
   const registeredProjects = async (): Promise<ProjectEntry[]> => {
     const entries: ProjectEntry[] = []
@@ -452,8 +476,8 @@ export function apply(ctx: Context, config: Config): void {
       handler: async (req: IncomingMessage, res: ServerResponse) => {
         if (!guardHost(req, res)) return
         if (req.method === 'GET') {
-          if (settingsFailure !== undefined) {
-            sendJson(res, 503, { ok: false, error: 'not-ready', message: settingsFailure })
+          if (settingsFailure !== undefined || settingsService === undefined || resolveEntryId() === undefined) {
+            sendJson(res, 503, { ok: false, error: 'not-ready', message: settingsFailure ?? '设置服务尚未就绪或未定位到自身 profile 条目。' })
             return
           }
           sendJson(res, 200, { ok: true, ...(await projectsView()) })
@@ -471,8 +495,9 @@ export function apply(ctx: Context, config: Config): void {
           return
         }
         const svc = settingsService
-        if (settingsFailure !== undefined || svc === undefined) {
-          sendJson(res, 503, { ok: false, error: 'not-ready', message: settingsFailure })
+        const entryNs = resolveEntryId()
+        if (settingsFailure !== undefined || svc === undefined || entryNs === undefined) {
+          sendJson(res, 503, { ok: false, error: 'not-ready', message: settingsFailure ?? '设置服务尚未就绪或未定位到自身 profile 条目。' })
           return
         }
         if (!svc.writable) {
@@ -528,10 +553,12 @@ export function apply(ctx: Context, config: Config): void {
             sendJson(res, 400, { ok: false, error: 'unknown-op' })
             return
           }
-          const saveDescriptor = svc.describe().find((row) => row.ns === NS)
-          const userSection = (saveDescriptor?.user ?? {}) as Record<string, unknown>
+          const saveDescriptor = svc.describe().find((row) => row.ns === entryNs)
+          // Project the live (base+user) values so the wholesale replace
+          // cannot drop composed fields; only manualProjects changes.
+          const liveSection = (saveDescriptor?.value ?? {}) as Record<string, unknown>
           // Wholesale replace (never update): the map must be able to lose keys.
-          await svc.replace(NS, { ...userSection, manualProjects: candidate }, expectedRevision)
+          await svc.replace(entryNs, { ...liveSection, manualProjects: candidate }, expectedRevision)
           sendJson(res, 200, { ok: true, ...(await projectsView()) })
         } catch (error) {
           console.error('[agent-instructions-editor] projects write failed:', error)

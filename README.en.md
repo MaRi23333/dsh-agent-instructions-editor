@@ -49,9 +49,9 @@ UI is in Chinese, as shown here.
 
 ## Host and desktop compatibility
 
-On 2026-09-30, the development team reported that `dsh-agent-instructions-editor 0.1.2` works with DSH `0.2.0-rc.2` and the desktop client of the same version. The desktop client uses the Web plugin UI, so no separate desktop-specific package is needed.
+Plugin **0.2.0 targets DSH 0.2**, with `0.2.0-rc.2` as its compatibility baseline. It fixes `settings.register is not a function` on the new host by using the host's profile settings API. The desktop client uses the Web plugin UI, so no separate desktop-specific package is needed.
 
-This statement reflects maintainer usage feedback and does not change instruction discovery, save security boundaries, or the "start a new session" semantics. Development dependencies and CI fixtures remain pinned to DSH `0.1.2-rc.1`; other host versions and operating systems require separate validation.
+**If you still use DSH 0.1, keep plugin 0.1.2** (pin the npm install to `dsh-agent-instructions-editor@0.1.2`) rather than upgrading to this release. Development dependencies and the CI baseline now use DSH `0.2.0-rc.2`; instruction discovery, save security boundaries and the "start a new session" semantics are unchanged.
 
 ## Install
 
@@ -65,7 +65,7 @@ Then **restart dsh web** (stop the current process, then run `dsh web`) and refr
 page. If installing from npm is not an option, install from a fixed GitHub tag instead:
 
 ```sh
-dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.1.2
+dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.0
 ```
 
 Both methods take effect after restarting dsh web.
@@ -74,7 +74,7 @@ Both methods take effect after restarting dsh web.
 with `@latest` to explicitly request the npm version. Keep that suffix so an existing
 installation is not mistaken for an already-satisfied request. Restart dsh web afterwards.
 
-Requirements: Node.js 22+, pnpm, and a DSH CLI matching the installed host. No local
+Requirements: DSH 0.2 (this release targets `0.2.0-rc.2`), Node.js 22+, pnpm, and a DSH CLI matching the installed host. No local
 build is needed — the npm package and the GitHub repository both ship the `lib/` build
 artifacts.
 
@@ -104,10 +104,9 @@ artifacts.
 
 ## Architecture
 
-- **Host half** (`src/index.ts`): its own HTTP routes `/agent-instructions/api/{projects,chain,file}`
-  (the standard `api.settings.*` wire is allow-listed and unavailable to third-party
-  namespaces); the manual-project registry lives in the `agent-instructions-editor`
-  settings namespace.
+- **Host half** (`src/index.ts`): its own HTTP routes `/agent-instructions/api/{projects,chain,file}`;
+  the manual-project registry lives in this plugin's profile entry and is read and
+  written through DSH 0.2's `SettingsForms`, with revision-based conflict detection.
 - **Client half** (`src/client/`): contributes the settings page via the
   `settings.section` slot; plain textarea editor (zero extra dependencies).
 - **Discovery** (`src/chain.ts`): reimplements the instruction loader's rules one by one
@@ -117,7 +116,7 @@ artifacts.
 ## Development
 
 ```sh
-pnpm install
+pnpm install --frozen-lockfile
 pnpm run typecheck
 pnpm run test      # discovery, write-path and edit-state unit tests
 pnpm run build     # tsdown: lib/index.js (host) + lib/client.js (browser)
@@ -125,13 +124,14 @@ pnpm run smoke     # smoke-host.mjs + smoke-client.mjs
 pnpm run check:pack
 ```
 
-- Dev dependencies are pinned to DSH `0.1.2-rc.1`. The exhaustive exact-version overrides
+- Dev dependencies are pinned to DSH `0.2.0-rc.2`. The exhaustive exact-version overrides
   in `pnpm-workspace.yaml` exist because:
   1. pnpm 11.21.0 mis-expands caret ranges with prerelease lower bounds
-     (`^0.1.2-rc.1` → `>=0.1.2 <0.2.0-0`, which excludes 0.1.2-rc.1 itself), causing
+     (`^0.2.0-rc.2` → `>=0.2.0 <0.3.0-0`, which excludes `0.2.0-rc.2` itself), causing
      NO_MATCHING_VERSION; and
-  2. `@deepseek-ai/dsh-client-runtime` / `@deepseek-ai/dsh-host-apiproxy` stopped being
-     published at `0.1.1-rc.2` (inlined into the CLI from 0.1.2 on).
+  2. Inlined, discontinued packages keep their last published versions:
+     `@deepseek-ai/dsh-client-runtime` / `@deepseek-ai/dsh-host-apiproxy` at `0.1.1-rc.2`,
+     and `@deepseek-ai/dsh-agent-presets` / `@deepseek-ai/dsh-code-runtime` at `0.1.5-rc.3`.
 - These dependencies are used for typechecking and tests only; none of it ships in the
   published artifact (see [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)).
 
