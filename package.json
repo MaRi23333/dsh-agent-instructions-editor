@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-instructions-editor",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Settings-page editor for DeepSeek Harness workspace instruction files: the user-global ~/.dsh/AGENTS.md, project-chain AGENTS.md/CLAUDE.md files, and AGENTS.local.md/CLAUDE.local.md overlays, with byte-budget display and new-session hints.",
   "keywords": [
     "deepseek-harness",
@@ -32,6 +32,7 @@
       "default": "./lib/client.js"
     },
     "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
     "./package.json": "./package.json"
   },
   "files": [
@@ -40,6 +41,8 @@
     "cordis.patch.yml",
     "README.md",
     "README.en.md",
+    "CHANGELOG.md",
+    "locale/*.json",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
     "assets/readme"

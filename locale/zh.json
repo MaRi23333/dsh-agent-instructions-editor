@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "个性化指令编辑器",
+    "description": "在设置页编辑全局和项目的 AGENTS.md/CLAUDE.md 指令文件，查看字节预算，并获得新会话生效提示。"
+  }
+}

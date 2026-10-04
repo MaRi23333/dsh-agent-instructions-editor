@@ -49,7 +49,7 @@ UI is in Chinese, as shown here.
 
 ## Host and desktop compatibility
 
-Plugin **0.2.1 targets DSH 0.2**, with `0.2.0-rc.2` as its compatibility baseline. It fixes `settings.register is not a function` on the new host by using the host's profile settings API. The desktop client uses the Web plugin UI, so no separate desktop-specific package is needed.
+The current source version **0.2.2 targets DSH 0.2**, with `0.2.0-rc.2` as its compatibility baseline. This update adds localized English and Chinese names and descriptions to the plugin manager. The published 0.2.1 release fixed `settings.register is not a function` on the new host by using the host's profile settings API. The desktop client uses the Web plugin UI, so no separate desktop-specific package is needed. See [CHANGELOG.md](./CHANGELOG.md) for the update notes.
 
 **If you still use DSH 0.1, keep plugin 0.1.2** (pin the npm install to `dsh-agent-instructions-editor@0.1.2`) rather than upgrading to this release. Development dependencies and the CI baseline now use DSH `0.2.0-rc.2`; instruction discovery, save security boundaries and the "start a new session" semantics are unchanged.
 
@@ -62,7 +62,7 @@ dsh plugin --profile web add dsh-agent-instructions-editor@latest
 ```
 
 Then **restart dsh web** (stop the current process, then run `dsh web`) and refresh the
-page. If installing from npm is not an option, install from a fixed GitHub tag instead:
+page. If installing from npm is not an option, install from the published 0.2.1 GitHub tag instead (the 0.2.2 source candidate is not published yet):
 
 ```sh
 dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.1

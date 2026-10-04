@@ -57,6 +57,7 @@ const files = result.files.map((f) => f.path).sort()
 
 const expected = [
   'LICENSE',
+  'CHANGELOG.md',
   'README.en.md',
   'README.md',
   'THIRD_PARTY_NOTICES.md',
@@ -65,6 +66,8 @@ const expected = [
   'cordis.patch.yml',
   'lib/client.js',
   'lib/index.js',
+  'locale/en.json',
+  'locale/zh.json',
   'package.json',
 ].sort()
 

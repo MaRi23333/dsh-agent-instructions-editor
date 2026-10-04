@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Workspace instructions editor",
+    "description": "Edit global and project AGENTS.md/CLAUDE.md instructions in Settings, with a byte-budget display and new-session hints."
+  }
+}
