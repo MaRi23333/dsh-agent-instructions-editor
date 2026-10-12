@@ -180,7 +180,10 @@ const S = {
     padding: '3px 6px',
     borderRadius: 6,
     border: '1px solid rgba(128,128,128,0.4)',
-    background: 'transparent',
+    // 不透明底色：原生 <select> 弹层会跟随该背景色渲染。
+    // 若为 transparent，Chromium 会退回默认浅色弹层面板，
+    // 而 option 文字沿用主题前景色，深色主题下即成白底白字。
+    background: 'var(--dsw-alias-bg-layer-2)',
     color: 'inherit',
     maxWidth: 420,
   } as React.CSSProperties,
