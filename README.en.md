@@ -55,24 +55,55 @@ Version **0.2.3 targets DSH 0.2**, with `0.2.0-rc.2` as its compatibility baseli
 
 ## Install
 
-Install from npm with the DSH CLI that matches your installed host (recommended):
+Desktop and Web have separate plugin installations and activation states. Choose the method matching your environment:
+
+### Desktop Installation (Recommended)
+
+Install directly within the desktop client UI (no command-line setup required):
+
+1. Open **Plugins** in the desktop left sidebar, then click **Add plugin**;
+2. Enter the npm package name `dsh-agent-instructions-editor@latest` and install;
+3. Once installation completes, click **Enable now** (closing the dialog without enabling leaves the plugin installed but disabled);
+4. Only if the UI indicates a restart is required, fully quit the application via the menu (**Quit**) and reopen it (closing the window may only hide it to the background);
+5. Verification: Open **Settings** and confirm the **"个性化指令" (Personalization)** section appears in the settings sidebar.
+
+<details>
+<summary>Alternative: Desktop terminal installation (Windows / macOS)</summary>
+
+If you prefer using the command line, use the desktop-bundled CLI:
+
+1. In the desktop application menu, select **Manage dsh Command…** → **Install** (register the bundled CLI and follow any reported PATH conflict instructions), then open a new terminal;
+2. Ensure the desktop app has been launched at least once to initialize, and fully exit via **Quit**;
+3. Run the desktop-profile commands in your terminal to install and verify:
+   ```sh
+   dsh plugin --profile desktop add dsh-agent-instructions-editor@latest
+   dsh plugin --profile desktop list
+   ```
+4. Reopen the desktop application.
+
+> Note: Standalone `dsh` installed via npm or run via `npx` cannot manage the desktop profile. For details on how the bundled command runtime works, see [bundled-command-runtime](https://github.com/deepseek-ai/deepseek-harness/blob/dsh-v0.2.1-rc.2/apps/desktop/README.md#bundled-command-runtime) in the official desktop documentation.
+</details>
+
+### Web Installation
+
+Manage Web plugins using the matching CLI. Prefer using the same host-matched `dsh` CLI that launches your Web instance:
 
 ```sh
 dsh plugin --profile web add dsh-agent-instructions-editor@latest
 ```
 
-Then **restart dsh web** (stop the current process, then run `dsh web`) and refresh the
-page. If installing from npm is not an option, pin the 0.2.3 GitHub tag instead:
+Then **restart dsh web** (stop the current process, then run `dsh web`) and refresh the page.
+
+Other install sources:
 
 ```sh
+# If installing from npm is not an option, pin the 0.2.3 GitHub tag instead:
 dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.3
 ```
 
 Both methods take effect after restarting dsh web.
 
-**Switching from a local directory or GitHub install to npm**: use the command above
-with `@latest` to explicitly request the npm version. Keep that suffix so an existing
-installation is not mistaken for an already-satisfied request. Restart dsh web afterwards.
+> **Note**: If using `npx`, pin it to the exact version matching your Web host (e.g. `npx @deepseek-ai/dsh@0.2.0-rc.2 ...`). When switching from a local directory or GitHub install to npm, always include `@latest` so an existing installation is not mistaken for an already-satisfied request.
 
 Requirements: DSH 0.2 (this release targets `0.2.0-rc.2`), Node.js 22+, pnpm, and a DSH CLI matching the installed host. No local
 build is needed — the npm package and the GitHub repository both ship the `lib/` build
