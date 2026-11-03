@@ -49,7 +49,7 @@ UI is in Chinese, as shown here.
 
 ## Host and desktop compatibility
 
-Version **0.2.3 targets DSH 0.2**, with `0.2.0-rc.2` as its compatibility baseline. This update fixes unreadable white-on-white unselected options in the project select popup under dark theme. Version 0.2.2 added localized English and Chinese names and descriptions to the plugin manager. The desktop client uses the Web plugin UI, so no separate desktop-specific package is needed. See [CHANGELOG.md](./CHANGELOG.md) for the update notes.
+Version **0.2.4 targets DSH 0.2**, with `0.2.0-rc.2` as its compatibility baseline. This update clarifies Desktop/Web installation, first use, and when instruction changes take effect; editing and saving behavior is unchanged. The dark-theme project-menu fix from 0.2.3 is retained. The desktop client uses the Web plugin UI, so no separate desktop-specific package is needed. See [CHANGELOG.md](./CHANGELOG.md) for the update notes.
 
 **If you still use DSH 0.1, keep plugin 0.1.2** (pin the npm install to `dsh-agent-instructions-editor@0.1.2`) rather than upgrading to this release. Development dependencies and the CI baseline now use DSH `0.2.0-rc.2`; instruction discovery, save security boundaries and the "start a new session" semantics are unchanged.
 
@@ -97,8 +97,8 @@ Then **restart dsh web** (stop the current process, then run `dsh web`) and refr
 Other install sources:
 
 ```sh
-# If installing from npm is not an option, pin the 0.2.3 GitHub tag instead:
-dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.3
+# If installing from npm is not an option, pin the 0.2.4 GitHub tag instead:
+dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.4
 ```
 
 Both methods take effect after restarting dsh web.

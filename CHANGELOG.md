@@ -1,5 +1,10 @@
 # 更新记录 / Changelog
 
+## 0.2.4（2026-11-03）
+
+- 完善桌面端与 Web 安装、首次使用和新会话生效说明；编辑与保存行为不变。
+- Clarify Desktop/Web installation, first use, and when instruction changes take effect. Editing and saving behavior is unchanged.
+
 ## 0.2.3（2026-10-13）
 
 - 修复深色主题下「个性化指令」项目切换下拉展开后未选中项白底白字、难以阅读的问题。
