@@ -13,13 +13,11 @@ import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import { InstructionsSection, type InstructionsSectionInjected } from './InstructionsSection.tsx'
-import { SECTION_ICON_INNER } from './icon.tsx'
+import { registerSettingsNavIcon } from './nav-icon.ts'
 import { en, zh } from './locales.ts'
 
 const NS = 'agent-instructions-editor'
 const API_BASE = '/agent-instructions/api'
-/** The nav label this plugin registers — also the DOM hook for icon decoration. */
-const NAV_LABELS = new Set(['个性化指令'])
 
 // ── wire types ─────────────────────────────────────────────────────────────
 
@@ -256,34 +254,7 @@ export function apply(ctx: ClientContext): void {
     }
   }
 
-  // Dedicated nav icon for THIS plugin's own row. The shell's navIcon(id)
-  // table is closed (official ids only; everything else falls back to a
-  // generic gear), so the decoration replaces the fallback <svg> inside our
-  // nav button — matched by our own registered label text — with the drawn
-  // icon. A MutationObserver re-applies it when the panel re-renders; gated
-  // on the settings dialog being present so idle chat streams never pay the
-  // query cost. Every third-party settings plugin owns the same pattern for
-  // its own row (see dsh-subagent-library/src/client/nav-icon.ts).
-  ctx.effect(() => {
-    const decorate = (): void => {
-      if (document.querySelector('[role="dialog"]') === null) return
-      for (const button of Array.from(document.querySelectorAll('button'))) {
-        const label = button.querySelector(':scope > span')
-        if (label === null || !NAV_LABELS.has(label.textContent ?? '')) continue
-        const existing = button.firstElementChild
-        if (existing instanceof SVGElement) {
-          if (existing.dataset.navIcon === '1') continue
-          const template = document.createElement('template')
-          template.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-nav-icon="1">${SECTION_ICON_INNER}</svg>`
-          existing.replaceWith(template.content.firstElementChild as SVGElement)
-        }
-      }
-    }
-    const observer = new MutationObserver(() => decorate())
-    observer.observe(document.body, { childList: true, subtree: true })
-    decorate()
-    return () => observer.disconnect()
-  }, 'agent-instructions-editor: nav icon decoration')
+  registerSettingsNavIcon(ctx)
 
   ctx.slots.inject('settings.section', () => ctx.slots.register({
     name: 'settings.section',

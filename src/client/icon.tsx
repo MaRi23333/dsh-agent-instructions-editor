@@ -2,8 +2,6 @@
  * The dedicated 个性化指令 icon: a document with a pen — instruction file
  * plus editing. Stroke follows `currentColor`, so it inherits the theme's
  * label color in both light and dark mode. Drawn on a 16px grid, 1.2 stroke.
- * (Every third-party settings plugin owns and decorates its own icon the
- * same way — see dsh-subagent-library/src/client/nav-icon.ts for the pattern.)
  */
 export const SECTION_ICON_INNER =
   '<path d="M13.25 8V5.5L10 2.25H4.75A1.5 1.5 0 0 0 3.25 3.75v8.5a1.5 1.5 0 0 0 1.5 1.5H7.75"/>'

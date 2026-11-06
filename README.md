@@ -37,7 +37,7 @@ DeepSeek Harness 的个性化指令编辑插件：在 Web 设置页里直接编�
 
 ## 宿主与桌面端兼容
 
-版本 **0.2.4 面向 DSH 0.2**，适配基线为 `0.2.0-rc.2`。本次完善桌面端与 Web 安装、首次使用和新会话生效说明，编辑与保存行为不变。此前 0.2.3 的深色主题下拉菜单修复继续保留。桌面客户端沿用 Web 插件界面，无需另一份桌面专用包。变更记录见 [CHANGELOG.md](./CHANGELOG.md)。
+版本 **0.2.5** 适配 DSH 0.2.2 的原生设置侧栏图标，编辑与保存行为不变。此前的深色主题下拉菜单修复及桌面端、Web 安装说明继续保留。桌面客户端沿用 Web 插件界面，无需另一份桌面专用包。变更记录见 [CHANGELOG.md](./CHANGELOG.md)。
 
 **仍使用 DSH 0.1 的用户请保留插件 0.1.2**（npm 安装指定 `dsh-agent-instructions-editor@0.1.2`），不要直接升级到本版。开发依赖与 CI 基线已更新到 DSH `0.2.0-rc.2`；指令文件的发现规则、保存安全边界和「新会话生效」语义保持不变。
 
@@ -85,8 +85,8 @@ dsh plugin --profile web add dsh-agent-instructions-editor@latest
 其他安装方式：
 
 ```sh
-# npm 安装不可用时，可改为从 GitHub 固定 0.2.4 tag 安装
-dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.4
+# npm 安装不可用时，可改为从 GitHub 固定 0.2.5 tag 安装
+dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.5
 ```
 
 两种方式都在重启 dsh web 后生效。

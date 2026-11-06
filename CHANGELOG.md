@@ -1,5 +1,10 @@
 # 更新记录 / Changelog
 
+## 0.2.5（2026-11-06）
+
+- 通过 DSH 0.2.2 的原生设置图标插槽显示指令编辑器图标，修复新版设置侧栏中的图标回退；尺寸与颜色随宿主显示。
+- Use the native DSH 0.2.2 settings icon slot to restore the editor icon in the updated sidebar, with host-controlled sizing and theme colors.
+
 ## 0.2.4（2026-11-03）
 
 - 完善桌面端与 Web 安装、首次使用和新会话生效说明；编辑与保存行为不变。
