@@ -8,7 +8,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/github/actions/workflow/status/MaRi23333/dsh-agent-instructions-editor/ci.yml?style=flat-square&label=CI" alt="CI" />
-  <img src="https://img.shields.io/github/license/MaRi23333/dsh-agent-instructions-editor?style=flat-square" alt="License: MIT" />
+  <img src="https://img.shields.io/github/license/MaRi23333/dsh-agent-instructions-editor?style=flat-square" alt="License: Apache-2.0" />
   <img src="https://img.shields.io/badge/DeepSeek%20Harness-0.2.0--rc.2-4d6bfe?style=flat-square" alt="DeepSeek Harness 0.2.0-rc.2" />
 </p>
 
@@ -24,7 +24,7 @@
 DeepSeek Harness 的个性化指令编辑插件：在 Web 设置页里直接编辑指令文件体系（对标 Codex 的「个性化」设置），由全局编辑器 + 项目链浏览器 + 覆盖层组成，带字节预算显示与「新会话生效」提示。
 
 - **全局指令**：常驻编辑器，读写 `~/.dsh/AGENTS.md`，显示字节预算（默认 65,536）。
-- **项目指令**（默认折叠）：项目选择器（自动发现：工作区注册表 + 最近会话目录；也可手动粘贴路径）→ 按「项目根 → 工作目录」逐层展示每层的 4 个候选槽位（AGENTS.md / CLAUDE.md / AGENTS.local.md / CLAUDE.local.md），存在即可点击编辑，不存在可新建。
+- **项目指令**：展开后，从工作区或最近会话中选择项目，也可以粘贴路径。从项目根目录到当前工作目录，每一级都能查看 `AGENTS.md`、`CLAUDE.md`、`AGENTS.local.md` 和 `CLAUDE.local.md`。点文件名即可编辑；文件不存在时可以新建。
 - **与加载器相同的发现规则**：项目链发现、按目录内容去重（⧉ 徽标）、字节合计与预算条，遵循 `@deepseek-ai/dsh-agent-instructions` 的同一套规则。
 - **受控的写入**：文件名白名单 + realpath 项目根包含校验 + mtime 冲突检测（409 → 重新加载或覆盖）+ 临时文件原子替换；同一 dsh web 进程内对同一文件的写入按队列串行化，使用旧修改时间的普通保存会收到 409 提示。
 - **生效提示**：保存后建议新建会话。编辑器不会直接替换已有会话中的指令；已有会话何时重新读取由宿主加载器决定。
@@ -85,8 +85,8 @@ dsh plugin --profile web add dsh-agent-instructions-editor@latest
 其他安装方式：
 
 ```sh
-# npm 安装不可用时，可改为从 GitHub 固定 0.2.5 tag 安装
-dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.5
+# npm 安装不可用时，可改为从 GitHub 固定 0.2.6 tag 安装
+dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.6
 ```
 
 两种方式都在重启 dsh web 后生效。
@@ -127,6 +127,6 @@ pnpm run check:pack
 
 ## License
 
-[MIT](./LICENSE)。本发布产物不内联任何第三方代码，说明见 [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)。
+本版自有代码采用 [Apache-2.0](./LICENSE)。社区贡献的深色主题项目下拉修复沿用 MIT，见[第三方声明](./THIRD_PARTY_NOTICES.md)。
 
 本插件是独立社区项目，与 DeepSeek 无任何隶属或背书关系；`DeepSeek Harness` 名称仅用于标明兼容平台。

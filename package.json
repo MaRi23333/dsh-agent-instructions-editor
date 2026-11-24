@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-instructions-editor",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Settings-page editor for DeepSeek Harness workspace instruction files: the user-global ~/.dsh/AGENTS.md, project-chain AGENTS.md/CLAUDE.md files, and AGENTS.local.md/CLAUDE.local.md overlays, with byte-budget display and new-session hints.",
   "keywords": [
     "deepseek-harness",
@@ -69,7 +69,7 @@
     "check:pack": "node scripts/check-pack.mjs",
     "prepack": "pnpm run build"
   },
-  "license": "MIT",
+  "license": "Apache-2.0 AND MIT",
   "dependencies": {
     "@deepseek-ai/schemastery": "~3.18.4"
   },

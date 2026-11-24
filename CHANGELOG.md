@@ -1,5 +1,12 @@
 # 更新记录 / Changelog
 
+## 0.2.6（2026-11-24）
+
+- 精简英文首页的功能说明，安装指引指向本版。
+- 本版自有代码改用 Apache-2.0，深色主题下拉框的社区贡献继续使用 MIT。
+- Streamline the English overview and point the installation guide to this version.
+- Project-owned work adopts Apache-2.0. The community dropdown fix remains under MIT.
+
 ## 0.2.5（2026-11-06）
 
 - 通过 DSH 0.2.2 的原生设置图标插槽显示指令编辑器图标，修复新版设置侧栏中的图标回退；尺寸与颜色随宿主显示。

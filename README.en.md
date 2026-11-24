@@ -8,7 +8,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/github/actions/workflow/status/MaRi23333/dsh-agent-instructions-editor/ci.yml?style=flat-square&label=CI" alt="CI" />
-  <img src="https://img.shields.io/github/license/MaRi23333/dsh-agent-instructions-editor?style=flat-square" alt="License: MIT" />
+  <img src="https://img.shields.io/github/license/MaRi23333/dsh-agent-instructions-editor?style=flat-square" alt="License: Apache-2.0" />
   <img src="https://img.shields.io/badge/DeepSeek%20Harness-0.2.0--rc.2-4d6bfe?style=flat-square" alt="DeepSeek Harness 0.2.0-rc.2" />
 </p>
 
@@ -25,11 +25,7 @@ instruction files, in the spirit of Codex's personalization settings:
 
 - **Global instructions**: a persistent editor for `~/.dsh/AGENTS.md` with a byte-budget
   display (default 65,536).
-- **Project instructions** (collapsed by default): a project picker (auto-discovered from
-  the workspace registry + recent session directories; manual paths accepted too) that
-  renders each level of the "project root → working directory" chain with its 4 candidate
-  slots (AGENTS.md / CLAUDE.md / AGENTS.local.md / CLAUDE.local.md) — click to edit an
-  existing file or create a missing one.
+- **Project instructions:** Expand this section and choose a project from your workspaces or recent sessions, or paste its path. For each directory from the project root down to your working directory, you can edit or create `AGENTS.md`, `CLAUDE.md`, `AGENTS.local.md`, and `CLAUDE.local.md`.
 - **Same discovery rules as the instruction loader**: chain discovery, per-directory
   content dedup (⧉ badge), byte totals and the budget bar follow the same rules as
   `@deepseek-ai/dsh-agent-instructions`.
@@ -98,7 +94,7 @@ Other install sources:
 
 ```sh
 # If installing from npm is not an option, pin the 0.2.5 GitHub tag instead:
-dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.5
+dsh plugin --profile web add github:MaRi23333/dsh-agent-instructions-editor#v0.2.6
 ```
 
 Both methods take effect after restarting dsh web.
@@ -168,8 +164,7 @@ pnpm run check:pack
 
 ## License
 
-[MIT](./LICENSE). The published artifact bundles no third-party code — see
-[THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).
+Project-owned work in this release is under [Apache-2.0](./LICENSE). The community patch for the dark-theme project dropdown remains under MIT. See [third-party notices](./THIRD_PARTY_NOTICES.md).
 
 This plugin is an independent community project, not affiliated with or endorsed by
 DeepSeek; the `DeepSeek Harness` name is used solely to indicate platform compatibility.
